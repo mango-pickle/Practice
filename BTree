@@ -1,0 +1,153 @@
+// Example program
+#include <iostream>
+#include <string>
+#include <queue>
+
+//IMP : header file for PAIR
+#include <utility>
+
+using namespace std;
+
+typedef struct Node
+{
+    int val;
+    Node *left;
+    Node *right;
+}Node;
+
+
+// #1 : Create a new node
+Node *newNode(int a)
+{
+    Node *node = new Node;
+    node->left = NULL;
+    node->right = NULL;
+    node->val = a;
+    return node;
+}
+
+// #2 : Insert node
+// Returns root
+
+/*
+        4
+    2       8
+    
+-> 1
+
+//go left
+while(cur->left != NULL && cur->right != NULL)
+if(cur->val > a)
+cur = cur->left;
+
+else if(cur->val <= a)
+cur = cur->right;
+
+*/
+
+Node *insertNode(Node *root, int a)
+{
+    Node *n = newNode(a);
+    Node *cur = root;
+    
+    //first node
+    if( root == NULL)
+        return n;
+    
+    // traverse down to leaf
+    while(cur->left != NULL && cur->right != NULL)
+    {
+        if( cur->val > a)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    
+    // add new node to L/R of the leaf
+    if(cur->val > a)
+        cur->left = n;
+    else 
+        cur->right = n;
+    
+    return root;
+}
+
+// #3 : Print the tree : level by level
+
+/*
+        10
+    5       15
+  1   7   11   20
+  
+push(root)
+while(q)
+    x = pop
+    print x
+    push(x.left)
+    push(x.right)
+ 
+*/
+
+
+void printTree(Node *root)
+{
+    queue<pair<Node*, int>> q;
+    if(root == NULL) return;
+    
+    Node *cur = root;
+    pair<Node*, int> item;
+    int curlevel = 1;
+    
+    q.push(make_pair(cur, 1));
+    
+    while(!q.empty())
+    {
+        //print cur 
+        item = q.front();
+        q.pop();
+        
+        
+        if(item.second != curlevel) cout<<endl;
+        cout<<"  "<<(item.first)->val;
+        
+        curlevel = item.second;
+        
+        // push cur children
+        if((item.first)->left != NULL) q.push(make_pair((item.first)->left, item.second+1));
+        if((item.first)->right != NULL) q.push(make_pair((item.first)->right, item.second+1));
+    }
+    
+}
+
+
+// #4 : Lookup node val
+Node *lookup(Node *node, int val)
+{
+    
+    while(node != NULL && node->val != val)
+    {  
+        if(node->val > val)
+            node = node->left;
+        else 
+            node = node->right;
+    }
+    
+    if(node->val == val) return node;
+    return NULL;
+}
+
+
+
+
+int main()
+{
+    Node *root = newNode(10);
+    root = insertNode(root, 5);
+    root = insertNode(root, 15);
+    root = insertNode(root, 1);
+    root = insertNode(root, 7);
+    root = insertNode(root, 11);
+    root = insertNode(root, 20);
+    
+    printTree(root);
+}
