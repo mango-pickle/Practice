@@ -93,7 +93,7 @@ void printTree(Node *root)
 {
     queue<pair<Node*, int>> q;
     if(root == NULL) return;
-
+    cout<<endl;
     Node *cur = root;
     pair<Node*, int> item;
     int curlevel = 1;
@@ -194,6 +194,47 @@ void inorderPredSucc(Node *root, Node*& pred, Node*& succ, int val)
 }
 
 
+// #6 Delete a node
+/*
+leaf
+->delete
+
+only 1 child
+->replace w/ child
+
+l&r
+->replace with predec
+*/
+
+void delNode( Node *root, int k)
+{
+    Node *pred = NULL; Node *succ = NULL;
+
+    if(root == NULL) return;
+    Node *delNode = lookup(root, k);
+    if(delNode == NULL) return;
+
+    if(delNode->left == NULL && delNode->right == NULL)
+    {
+
+        delete delNode;
+        delNode = NULL;
+    }
+    else if(delNode->left == NULL)
+        delNode = delNode->right;
+
+    else if(delNode->right == NULL)
+        delNode = delNode->left;
+
+    else
+    {
+         inorderPredSucc(root,pred, succ,k);
+         // copy over pred val and set to NULL
+         delNode->val = pred->val;
+         pred = NULL;
+    }
+}
+
 
 int main()
 {
@@ -215,4 +256,8 @@ int main()
         cout<<"\nPred : "<<pred->val;
     if(succ != NULL)
         cout<<"\nSucc:"<<succ->val;
+
+    delNode(root, 1);
+
+    printTree(root);
 }
