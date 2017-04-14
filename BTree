@@ -32,7 +32,7 @@ Node *newNode(int a)
 /*
         4
     2       8
-    
+
 -> 1
 
 //go left
@@ -49,11 +49,11 @@ Node *insertNode(Node *root, int a)
 {
     Node *n = newNode(a);
     Node *cur = root;
-    
+
     //first node
     if( root == NULL)
         return n;
-    
+
     // traverse down to leaf
     while(cur->left != NULL && cur->right != NULL)
     {
@@ -62,13 +62,13 @@ Node *insertNode(Node *root, int a)
         else
             cur = cur->right;
     }
-    
+
     // add new node to L/R of the leaf
     if(cur->val > a)
         cur->left = n;
-    else 
+    else
         cur->right = n;
-    
+
     return root;
 }
 
@@ -78,14 +78,14 @@ Node *insertNode(Node *root, int a)
         10
     5       15
   1   7   11   20
-  
+
 push(root)
 while(q)
     x = pop
     print x
     push(x.left)
     push(x.right)
- 
+
 */
 
 
@@ -93,49 +93,105 @@ void printTree(Node *root)
 {
     queue<pair<Node*, int>> q;
     if(root == NULL) return;
-    
+
     Node *cur = root;
     pair<Node*, int> item;
     int curlevel = 1;
-    
+
     q.push(make_pair(cur, 1));
-    
+
     while(!q.empty())
     {
-        //print cur 
+        //print cur
         item = q.front();
         q.pop();
-        
-        
+
+
         if(item.second != curlevel) cout<<endl;
         cout<<"  "<<(item.first)->val;
-        
+
         curlevel = item.second;
-        
+
         // push cur children
         if((item.first)->left != NULL) q.push(make_pair((item.first)->left, item.second+1));
         if((item.first)->right != NULL) q.push(make_pair((item.first)->right, item.second+1));
     }
-    
+
 }
 
 
 // #4 : Lookup node val
 Node *lookup(Node *node, int val)
 {
-    
+
     while(node != NULL && node->val != val)
-    {  
+    {
         if(node->val > val)
             node = node->left;
-        else 
+        else
             node = node->right;
     }
-    
+
     if(node->val == val) return node;
     return NULL;
 }
 
+// #5 : Inorder Predecessor
+/*
+            20
+        /          \
+    10              30
+  /   \           /    \
+5      15        25     35
+      /           \
+    14            26
+
+  */
+void inorderPredSucc(Node *root, Node*& pred, Node*& succ, int val)
+{
+    // Find the node with val
+    if(root == NULL) return ;
+
+    if(root->val == val)
+    {
+        Node *tmp = NULL;
+
+        // PRED: find max of Left / rightmost of left
+        if(root->left != NULL)
+        {
+            tmp = root->left;
+            while(tmp->right)
+                tmp = tmp->right;
+            pred = tmp;
+        }
+
+
+        //SUCC: find min of right / leftmost of right
+        if(root->right != NULL)
+        {
+            tmp = root->right;
+            while(tmp->left)
+                tmp = tmp->left;
+            succ = tmp;
+        }
+
+        return;
+    }
+
+        // not at node. recurse through L/R part of tree base don val
+        if(root->val > val)
+        {
+            // val before root. So root can be succ. but no pred yet
+            succ = root;
+            inorderPredSucc(root->left, pred, succ, val);
+        }
+        else
+        {
+            // root before val. So root can be pred. no succ yet
+            pred = root;
+            inorderPredSucc(root->right, pred, pred, val);
+        }
+}
 
 
 
@@ -148,6 +204,15 @@ int main()
     root = insertNode(root, 7);
     root = insertNode(root, 11);
     root = insertNode(root, 20);
-    
+
     printTree(root);
+
+    Node *pred = NULL; Node *succ = NULL;
+
+    inorderPredSucc(root,pred, succ,1);
+
+    if(pred!= NULL)
+        cout<<"\nPred : "<<pred->val;
+    if(succ != NULL)
+        cout<<"\nSucc:"<<succ->val;
 }
